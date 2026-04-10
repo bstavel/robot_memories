@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Complete Memory Experiment Test</title>
+  
+  <!-- Load libraries -->
+  <script src="app/static/lib/jquery-3.3.1/jquery.min.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/jspsych.js"></script>
+  
+  <!-- Load jsPsych plugins -->
+  <script src="app/static/lib/jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/plugins/jspsych-instructions.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/plugins/jspsych-call-function.js"></script>
+  
+  <!-- Load our plugins -->
+  <script src="app/static/js/robot-memory-mapping.js"></script>
+  <script src="app/static/js/jspsych-robot-memory.js"></script>
+  <script src="app/static/js/jspsych-pit-trial-memory.js"></script>
+  <script src="app/static/js/jspsych-pit-instructions.js"></script>
+  <script src="app/static/js/jspsych-pit-comprehension.js"></script>
+  <script src="app/static/js/pit-runsheets.js"></script>
+  <script src="app/static/js/pit-instructions-memory.js"></script>
+  <script src="app/static/js/pit-experiment-memory.js"></script>
+  <script src="app/static/js/pit-surveys.js"></script>
+  
+  <!-- Load CSS -->
+  <link href="app/static/lib/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  <link href="app/static/css/factory-css.min.css" rel="stylesheet" type="text/css"></link>
+  
+  <!-- Include memory mapping functions directly -->
+  <script>
+    // Make memory mapping functions globally available
+    window.getMemoryCategory = getMemoryCategory;
+    window.selectRandomVideo = selectRandomVideo;
+    window.getMemoryInfo = getMemoryInfo;
+  </script>
+</head>
+<body></body>
+<script>
+
+  // Display alert message on back/refresh.
+  function verify_unload(e){
+    e.preventDefault();
+    (e || window.event).returnValue = null;
+    return null;
+  };
+  window.addEventListener("beforeunload", verify_unload);
+
+  // Add version metadata.
+  jsPsych.data.addProperties({
+    task_version: 'memory-v1.0',
+  });
+
+  // Define global variables.
+  var low_quality = false;
+
+  // Check for skip_practice URL parameter (e.g. ?skip_practice=1)
+  var skip_practice = new URLSearchParams(window.location.search).get('skip_practice') === '1';
+
+  // Define timeline.
+  var timeline = [];
+  timeline = timeline.concat(WELCOME);                 // Welcome screen
+  timeline = timeline.concat(SURVEYS);                 // Survey block
+  if (!skip_practice) {
+    timeline = timeline.concat(INSTRUCTIONS);          // Instructions block
+  }
+  timeline = timeline.concat(READY_01);                // Ready check (block 1)
+  timeline = timeline.concat(PIT.slice(0,120));        // PIT task (block 1)
+  timeline = timeline.concat(READY_02);                // Ready check (block 2)
+  timeline = timeline.concat(PIT.slice(120,240));      // PIT task (block 2)
+  timeline = timeline.concat(FINISHED);                // End of task
+  timeline = timeline.concat(DEMO);                    // Demographics form
+  timeline = timeline.concat(DEBRIEF);                 // Debriefing form
+
+  jsPsych.init({
+    timeline: timeline,
+    preload_images: slider_stimuli,
+    show_progress_bar: true,
+    on_finish: function() {
+
+      // Remove requirement to verify redirect
+      window.removeEventListener("beforeunload", verify_unload);
+
+      // Add interactions to the data variable
+      var interaction_data = jsPsych.data.getInteractionData();
+      jsPsych.data.get().addToLast({interactions: interaction_data.json()});
+
+      // Testing
+      // jsPsych.data.displayData();
+
+      console.log('Complete memory experiment test finished!');
+      console.log('All data collected:', jsPsych.data.get());
+      
+      // Display summary
+      const data = jsPsych.data.get();
+      const trialData = data.filter({type: 'pit-trial-memory'});
+      
+      console.log('\n=== MEMORY EXPERIMENT SUMMARY ===');
+      console.log(`Total trials completed: ${trialData.length}`);
+      
+      // Count memory categories accessed
+      const memoryCounts = {};
+      trialData.forEach(trial => {
+        if (trial.robot_type) {
+          const category = getMemoryCategory(trial.robot_type, trial.accuracy == 1);
+          memoryCounts[category] = (memoryCounts[category] || 0) + 1;
+        }
+      });
+      
+      console.log('Memory categories accessed:', memoryCounts);
+      console.log('Accuracy by robot type:');
+      ['GW', 'NGW', 'GAL', 'NGL'].forEach(type => {
+        const typeTrials = trialData.filter(t => t.robot_type === type);
+        const accuracy = typeTrials.length > 0 ? typeTrials.reduce((sum, t) => sum + t.accuracy, 0) / typeTrials.length : 0;
+        console.log(`  ${type}: ${Math.round(accuracy * 100)}% (${typeTrials.length} trials)`);
+      });
+
+      if (low_quality) {
+        console.log('Experiment ended due to low quality responses');
+      } else {
+        console.log('Experiment completed successfully');
+      }
+
+    }
+  })
+
+</script>
+</html>
+
+
+

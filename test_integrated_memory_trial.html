@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Integrated Memory Trial Test</title>
+  
+  <!-- Load libraries -->
+  <script src="app/static/lib/jquery-3.3.1/jquery.min.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/jspsych.js"></script>
+  
+  <!-- Load jsPsych plugins -->
+  <script src="app/static/lib/jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+  
+  <!-- Load our plugins -->
+  <script src="app/static/js/robot-memory-mapping.js"></script>
+  <script src="app/static/js/jspsych-robot-memory.js"></script>
+  <script src="app/static/js/jspsych-pit-trial-memory.js"></script>
+  
+  <!-- Include memory mapping functions directly -->
+  <script>
+    // Make memory mapping functions globally available
+    window.getMemoryCategory = getMemoryCategory;
+    window.selectRandomVideo = selectRandomVideo;
+    window.getMemoryInfo = getMemoryInfo;
+  </script>
+  
+  <!-- Load CSS -->
+  <link href="app/static/lib/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  <link href="app/static/css/factory-css.min.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body></body>
+<script>
+
+  // Test different robot scenarios with memory integration
+  var timeline = [
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h2>Integrated Memory Trial Test</h2><p>This tests the robot repair decision with memory access integration.</p><p>You will see robots moving down the conveyor belt. Press SPACE to repair or do nothing to ignore.</p><p>Press any key to start.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    
+    // Test GW (Go-Win) robot - should press SPACE
+    {
+      type: 'pit-trial-memory',
+      robot_rune: 'A',
+      scanner_color: '#3366ff99', // Blue scanner (safe)
+      robot_type: 'GW',
+      correct: 32, // SPACE key
+      rune_set: 'elianto',
+      valid_responses: [32],
+      trial_duration: 3000,
+      memory_duration: 4000,
+      data: {block: 0, trial: 1, stimulus: 0, robot: 1, valence: 'win', action: 'go'}
+    },
+    
+    // Test NGW (No-Go-Win) robot - should do nothing
+    {
+      type: 'pit-trial-memory',
+      robot_rune: 'B',
+      scanner_color: '#3366ff99', // Blue scanner (safe)
+      robot_type: 'NGW',
+      correct: -1, // No response
+      rune_set: 'elianto',
+      valid_responses: [32],
+      trial_duration: 3000,
+      memory_duration: 4000,
+      data: {block: 0, trial: 2, stimulus: 1, robot: 2, valence: 'win', action: 'no-go'}
+    },
+    
+    // Test GAL (Go-Avoid-Loss) robot - should press SPACE
+    {
+      type: 'pit-trial-memory',
+      robot_rune: 'C',
+      scanner_color: '#f73b6a7A', // Red scanner (dangerous)
+      robot_type: 'GAL',
+      correct: 32, // SPACE key
+      rune_set: 'elianto',
+      valid_responses: [32],
+      trial_duration: 3000,
+      memory_duration: 4000,
+      data: {block: 0, trial: 3, stimulus: 2, robot: 3, valence: 'lose', action: 'go'}
+    },
+    
+    // Test NGL (No-Go-Avoid-Loss) robot - should do nothing
+    {
+      type: 'pit-trial-memory',
+      robot_rune: 'D',
+      scanner_color: '#f73b6a7A', // Red scanner (dangerous)
+      robot_type: 'NGL',
+      correct: -1, // No response
+      rune_set: 'elianto',
+      valid_responses: [32],
+      trial_duration: 3000,
+      memory_duration: 4000,
+      data: {block: 0, trial: 4, stimulus: 3, robot: 4, valence: 'lose', action: 'no-go'}
+    },
+    
+    // Summary
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h2>Test Complete!</h2><p>You have experienced the integrated memory trial system.</p><p>Check the browser console for detailed data about your responses and memory access.</p><p>Press any key to finish.</p>',
+      choices: jsPsych.ANY_KEY
+    }
+  ];
+
+  jsPsych.init({
+    timeline: timeline,
+    on_finish: function() {
+      console.log('Integrated memory trial test finished!');
+      console.log('All data collected:', jsPsych.data.get());
+      
+      // Display summary
+      const data = jsPsych.data.get();
+      const trialData = data.filter({type: 'pit-trial-memory'});
+      
+      console.log('\n=== INTEGRATED TRIAL SUMMARY ===');
+      trialData.forEach((trial, index) => {
+        console.log(`Trial ${index + 1}:`);
+        console.log(`  Robot Type: ${trial.robot_type}`);
+        console.log(`  Robot Rune: ${trial.rune}`);
+        console.log(`  Scanner Color: ${trial.hex}`);
+        console.log(`  Correct Action: ${trial.correct === 32 ? 'Press SPACE' : 'Do nothing'}`);
+        console.log(`  Your Choice: ${trial.choice === 32 ? 'Pressed SPACE' : 'Did nothing'}`);
+        console.log(`  Accuracy: ${trial.accuracy ? 'Correct' : 'Incorrect'}`);
+        console.log(`  Response Time: ${trial.rt}ms`);
+        console.log('---');
+      });
+    }
+  });
+
+</script>
+</html>

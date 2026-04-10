@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Robot Factory</title>
+
+  <!-- Load libraries -->
+  <script src="../static/lib/jquery-3.3.1/jquery.min.js"></script>
+  <script src="../static/lib/jspsych-6.1.0/jspsych.js"></script>
+
+  <!-- Load NivTurk plug-ins -->
+  <script src="../static/js/nivturk-plugins.js" type="text/javascript"></script>
+
+  <!-- Load experiment -->
+  <script src="../static/js/pit-runsheets.js" type="text/javascript"></script>
+  <script src="../static/js/pit-experiment.js" type="text/javascript"></script>
+  <script src="../static/js/pit-instructions.js" type="text/javascript"></script>
+  <script src="../static/js/pit-surveys.js" type="text/javascript"></script>
+
+  <!-- Load jsPsych plug-ins -->
+  <script src="../static/js/jspsych-pit-trial.js" type="text/javascript"></script>
+  <script src="../static/js/jspsych-pit-instructions.js" type="text/javascript"></script>
+  <script src="../static/js/jspsych-pit-comprehension.js" type="text/javascript"></script>
+  <script src="../static/js/jspsych-survey-demo.js" type="text/javascript"></script>
+  <script src="../static/js/jspsych-survey-debrief.js" type="text/javascript"></script>
+  <script src="../static/js/jspsych-survey-template.js" type="text/javascript"></script>
+  <script src="../static/js/jspsych-affective-slider.js" type="text/javascript"></script>
+  <script src="../static/lib/jspsych-6.1.0/plugins/jspsych-instructions.js" type="text/javascript"></script>
+  <script src="../static/lib/jspsych-6.1.0/plugins/jspsych-call-function.js" type="text/javascript"></script>
+
+  <!-- Load CSS styles -->
+  <link href="../static/lib/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  <link href="../static/css/factory-css.min.css" rel="stylesheet" type="text/css"></link>
+
+</head>
+<body></body>
+<script>
+
+  // Display alert message on back/refresh.
+  // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
+  function verify_unload(e){
+    e.preventDefault();
+    (e || window.event).returnValue = null;
+    return null;
+  };
+  window.addEventListener("beforeunload", verify_unload);
+
+  // Add version metadata.
+  jsPsych.data.addProperties({
+    task_version: 'battery-v0.2-trt',
+  });
+
+  // Define global variables.
+  var low_quality = false;
+
+  // Check for skip_practice URL parameter (e.g. ?skip_practice=1)
+  var skip_practice = new URLSearchParams(window.location.search).get('skip_practice') === '1';
+
+  // Define timeline.
+  var timeline = [];
+  timeline = timeline.concat(WELCOME);                 // Welcome screen
+  timeline = timeline.concat(SURVEYS);                 // Survey block
+  if (!skip_practice) {
+    timeline = timeline.concat(INSTRUCTIONS);          // Instructions block
+  }
+  timeline = timeline.concat(READY_01);                // Ready check (block 1)
+  timeline = timeline.concat(PIT.slice(0,120));        // PIT task (block 1)
+  timeline = timeline.concat(READY_02);                // Ready check (block 2)
+  timeline = timeline.concat(PIT.slice(120,240));      // PIT task (block 2)
+  timeline = timeline.concat(FINISHED);                // End of task
+  timeline = timeline.concat(DEMO);                    // Demographics form
+  timeline = timeline.concat(DEBRIEF);                 // Debriefing form
+
+  // Track trial count for periodic saving.
+  var trial_count = 0;
+
+  jsPsych.init({
+    timeline: timeline,
+    preload_images: slider_stimuli,
+    show_progress_bar: true,
+    on_data_update: function(data) {
+      trial_count++;
+      if (trial_count % 10 === 0) {
+        save_data();
+      }
+    },
+    on_finish: function() {
+
+      // Remove requirement to verify redirect
+      window.removeEventListener("beforeunload", verify_unload);
+
+      // Add interactions to the data variable
+      var interaction_data = jsPsych.data.getInteractionData();
+      jsPsych.data.get().addToLast({interactions: interaction_data.json()});
+
+      // Testing
+      // jsPsych.data.displayData();
+
+      if (low_quality) {
+
+        // Save rejected dataset to disk.
+        redirect_reject("1005");
+
+      } else {
+
+        // Save complete dataset to disk.
+        redirect_success("{{workerId}}", "{{assignmentId}}", "{{hitId}}",  "{{a}}", "{{tp_a}}", "{{b}}", "{{tp_b}}", "{{c}}", "{{tp_c}}");
+
+      }
+
+    }
+  })
+
+</script>
+</html>

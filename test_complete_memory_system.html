@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Complete Robot Memory System Test</title>
+  
+  <!-- Load libraries -->
+  <script src="app/static/lib/jquery-3.3.1/jquery.min.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/jspsych.js"></script>
+  
+  <!-- Load our plugins -->
+  <script src="app/static/js/robot-memory-mapping.js"></script>
+  <script src="app/static/js/jspsych-robot-memory.js"></script>
+  
+  <!-- Load CSS -->
+  <link href="app/static/lib/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body></body>
+<script>
+
+  // Test different robot scenarios
+  var timeline = [
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h2>Robot Memory System Test</h2><p>This will test different robot repair scenarios and their memory access outcomes.</p><p>Press any key to continue.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    
+    // Test GW (Go-Win) robot - correct action
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 1: Safe Robot (Blue Scanner) - Needs Repair</h3><p>You correctly pressed SPACE to repair this robot.</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    createMemoryTrial('GW', true, { duration: 4000 }),
+    
+    // Test GW (Go-Win) robot - incorrect action
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 2: Safe Robot (Blue Scanner) - Needs Repair</h3><p>You incorrectly did nothing (should have pressed SPACE).</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    createMemoryTrial('GW', false, { duration: 4000 }),
+    
+    // Test NGW (No-Go-Win) robot - correct action
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 3: Safe Robot (Blue Scanner) - Should Ignore</h3><p>You correctly did nothing (should not press SPACE).</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    createMemoryTrial('NGW', true, { duration: 4000 }),
+    
+    // Test GAL (Go-Avoid-Loss) robot - correct action
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 4: Dangerous Robot (Red Scanner) - Needs Repair</h3><p>You correctly pressed SPACE to repair this robot.</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    createMemoryTrial('GAL', true, { duration: 4000 }),
+    
+    // Test GAL (Go-Avoid-Loss) robot - incorrect action
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 5: Dangerous Robot (Red Scanner) - Needs Repair</h3><p>You incorrectly did nothing (should have pressed SPACE).</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    createMemoryTrial('GAL', false, { duration: 4000 }),
+    
+    // Test NGL (No-Go-Avoid-Loss) robot - correct action
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 6: Dangerous Robot (Red Scanner) - Should Ignore</h3><p>You correctly did nothing (should not press SPACE).</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    createMemoryTrial('NGL', true, { duration: 4000 }),
+    
+    // Test NGL (No-Go-Avoid-Loss) robot - incorrect action
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 7: Dangerous Robot (Red Scanner) - Should Ignore</h3><p>You incorrectly pressed SPACE (should have done nothing).</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    createMemoryTrial('NGL', false, { duration: 4000 }),
+    
+    // Summary
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h2>Test Complete!</h2><p>You have seen how different robot types and actions lead to different memory access outcomes.</p><p>Check the browser console for detailed data.</p><p>Press any key to finish.</p>',
+      choices: jsPsych.ANY_KEY
+    }
+  ];
+
+  jsPsych.init({
+    timeline: timeline,
+    on_finish: function() {
+      console.log('Complete memory system test finished!');
+      console.log('All data collected:', jsPsych.data.get());
+      
+      // Display summary
+      const data = jsPsych.data.get();
+      const memoryTrials = data.filter({type: 'robot-memory'});
+      
+      console.log('\n=== MEMORY ACCESS SUMMARY ===');
+      memoryTrials.forEach((trial, index) => {
+        console.log(`Trial ${index + 1}:`);
+        console.log(`  Robot Type: ${trial.robot_type}`);
+        console.log(`  Action Correct: ${trial.action_correct}`);
+        console.log(`  Memory Category: ${trial.memory_category}`);
+        console.log(`  Video: ${trial.video_filename}`);
+        console.log(`  Video Played: ${trial.video_played}`);
+        console.log(`  Skipped: ${trial.skipped}`);
+        console.log('---');
+      });
+    }
+  });
+
+</script>
+</html>
+

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Robot Memory Plugin Test</title>
+  
+  <!-- Load libraries -->
+  <script src="app/static/lib/jquery-3.3.1/jquery.min.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/jspsych.js"></script>
+  
+  <!-- Load our memory plugin -->
+  <script src="app/static/js/jspsych-robot-memory.js"></script>
+  
+  <!-- Load CSS -->
+  <link href="app/static/lib/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body></body>
+<script>
+
+  // Test timeline with different memory categories
+  var timeline = [
+    {
+      type: 'robot-memory',
+      memory_category: 'most_good',
+      memory_title: 'Accessing Excellent Robot Memory...',
+      memory_duration: 5000,
+      auto_advance: true
+    },
+    {
+      type: 'robot-memory', 
+      memory_category: 'less_good',
+      memory_title: 'Accessing Good Robot Memory...',
+      memory_duration: 5000,
+      auto_advance: true
+    },
+    {
+      type: 'robot-memory',
+      memory_category: 'less_bad', 
+      memory_title: 'Accessing Unpleasant Robot Memory...',
+      memory_duration: 5000,
+      auto_advance: true
+    },
+    {
+      type: 'robot-memory',
+      memory_category: 'most_bad',
+      memory_title: 'Accessing Disturbing Robot Memory...',
+      memory_duration: 5000,
+      auto_advance: true
+    }
+  ];
+
+  jsPsych.init({
+    timeline: timeline,
+    on_finish: function() {
+      console.log('Memory plugin test completed!');
+      console.log('Data collected:', jsPsych.data.get());
+    }
+  });
+
+</script>
+</html>
+

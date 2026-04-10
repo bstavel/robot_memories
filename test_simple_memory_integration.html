@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Memory Integration Test</title>
+  
+  <!-- Load libraries -->
+  <script src="app/static/lib/jquery-3.3.1/jquery.min.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/jspsych.js"></script>
+  
+  <!-- Load jsPsych plugins -->
+  <script src="app/static/lib/jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+  
+  <!-- Load our plugins -->
+  <script src="app/static/js/robot-memory-mapping.js"></script>
+  <script src="app/static/js/jspsych-robot-memory.js"></script>
+  
+  <!-- Load CSS -->
+  <link href="app/static/lib/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body></body>
+<script>
+
+  // Simple test with just basic trials and memory access
+  var timeline = [
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h2>Simple Memory Integration Test</h2><p>This tests basic functionality before the complex trial plugin.</p><p>Press any key to continue.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    
+    // Test memory access for different robot scenarios
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 1: Safe Robot - Correct Action</h3><p>You correctly repaired a safe robot.</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    {
+      type: 'robot-memory',
+      memory_category: 'most_good',
+      memory_title: 'Accessing Excellent Robot Memory...',
+      memory_duration: 3000,
+      auto_advance: true
+    },
+    
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 2: Safe Robot - Incorrect Action</h3><p>You incorrectly ignored a safe robot that needed repair.</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    {
+      type: 'robot-memory',
+      memory_category: 'less_good',
+      memory_title: 'Accessing Good Robot Memory...',
+      memory_duration: 3000,
+      auto_advance: true
+    },
+    
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 3: Dangerous Robot - Correct Action</h3><p>You correctly repaired a dangerous robot.</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    {
+      type: 'robot-memory',
+      memory_category: 'less_bad',
+      memory_title: 'Accessing Unpleasant Robot Memory...',
+      memory_duration: 3000,
+      auto_advance: true
+    },
+    
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h3>Scenario 4: Dangerous Robot - Incorrect Action</h3><p>You incorrectly ignored a dangerous robot that needed repair.</p><p>Press any key to see the memory you accessed.</p>',
+      choices: jsPsych.ANY_KEY
+    },
+    {
+      type: 'robot-memory',
+      memory_category: 'most_bad',
+      memory_title: 'Accessing Disturbing Robot Memory...',
+      memory_duration: 3000,
+      auto_advance: true
+    },
+    
+    // Summary
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<h2>Test Complete!</h2><p>This demonstrates the memory access system working.</p><p>Check the browser console for data.</p><p>Press any key to finish.</p>',
+      choices: jsPsych.ANY_KEY
+    }
+  ];
+
+  jsPsych.init({
+    timeline: timeline,
+    on_finish: function() {
+      console.log('Simple memory integration test finished!');
+      console.log('All data collected:', jsPsych.data.get());
+    }
+  });
+
+</script>
+</html>
+
+
+

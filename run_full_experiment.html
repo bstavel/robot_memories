@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Robot Memory Experiment (Full)</title>
+
+  <!-- Load libraries -->
+  <script src="app/static/lib/jquery-3.3.1/jquery.min.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/jspsych.js"></script>
+
+  <!-- Load jsPsych plugins -->
+  <script src="app/static/lib/jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/plugins/jspsych-instructions.js"></script>
+  <script src="app/static/lib/jspsych-6.1.0/plugins/jspsych-call-function.js"></script>
+
+  <!-- Load our plugins -->
+  <script src="app/static/js/robot-memory-mapping.js"></script>
+  <script src="app/static/js/jspsych-pit-trial-memory.js"></script>
+  <script src="app/static/js/jspsych-pit-instructions.js"></script>
+  <script src="app/static/js/jspsych-pit-comprehension.js"></script>
+  <script src="app/static/js/pit-runsheets.js"></script>
+
+  <!-- NOTE: pit-experiment-memory.js is loaded before pit-instructions-memory.js
+       because instructions references variables (e.g. scanner_color_win) defined there -->
+  <script src="app/static/js/pit-experiment-memory.js"></script>
+  <script src="app/static/js/pit-instructions-memory.js"></script>
+
+  <!-- pit-surveys.js is intentionally NOT loaded — it overrides SURVEYS/WELCOME/DEMO/DEBRIEF
+       with full questionnaire versions that require plugins not available in this test file.
+       pit-experiment-memory.js already defines simplified stubs for all of these. -->
+
+  <!-- Load CSS -->
+  <link href="app/static/lib/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
+  <link href="app/static/css/factory-css.min.css" rel="stylesheet" type="text/css">
+
+</head>
+<body></body>
+<script>
+
+  // Display alert message on back/refresh.
+  function verify_unload(e){
+    e.preventDefault();
+    (e || window.event).returnValue = null;
+    return null;
+  };
+  window.addEventListener("beforeunload", verify_unload);
+
+  // Add version metadata.
+  jsPsych.data.addProperties({
+    task_version: 'memory-v1.0-full-test',
+  });
+
+  // Define global variables.
+  var low_quality = false;
+
+  // Check for skip_practice URL parameter (e.g. ?skip_practice=1)
+  var skip_practice = new URLSearchParams(window.location.search).get('skip_practice') === '1';
+
+  // Define timeline.
+  var timeline = [];
+  timeline = timeline.concat(WELCOME);                 // Welcome screen
+  if (!skip_practice) {
+    timeline = timeline.concat(INSTRUCTIONS);          // Instructions + practice block
+  }
+  timeline = timeline.concat(READY_01);                // Ready check (block 1)
+  timeline = timeline.concat(PIT.slice(0,120));        // PIT task (block 1)
+  timeline = timeline.concat(READY_02);                // Ready check (block 2)
+  timeline = timeline.concat(PIT.slice(120,240));      // PIT task (block 2)
+  timeline = timeline.concat(FINISHED);                // End of task
+  timeline = timeline.concat(DEMO);                    // Demographics
+  timeline = timeline.concat(DEBRIEF);                 // Debriefing
+
+  // Track trial count for periodic saving.
+  var trial_count = 0;
+
+  function save_data() {
+    var json = jsPsych.data.get().json();
+    var blob = new Blob([json], {type: 'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'data_trial_' + trial_count + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  jsPsych.init({
+    timeline: timeline,
+    show_progress_bar: true,
+    on_data_update: function(data) {
+      trial_count++;
+      if (trial_count % 20 === 0) {
+        save_data();
+      }
+    },
+    on_finish: function() {
+      window.removeEventListener("beforeunload", verify_unload);
+
+      var interaction_data = jsPsych.data.getInteractionData();
+      jsPsych.data.get().addToLast({interactions: interaction_data.json()});
+
+      console.log('Experiment complete!');
+      console.log('Total trials:', jsPsych.data.get().count());
+
+      if (low_quality) {
+        console.log('Ended due to low quality responses.');
+      }
+      save_data();
+    }
+  })
+
+</script>
+</html>
