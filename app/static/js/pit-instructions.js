@@ -17,7 +17,7 @@ var instructions_01 = {
   type: 'pit-instructions',
   pages: [
     "Welcome to the <b>Robot Factory</b> game!",
-    "In this game, you will be inspecting robots as they move down the assembly line into the <b>scanner</b>.",
+    "You will be inspecting robots as they move down the assembly line into the <b>scanner</b>.",
     "Sometimes a robot in the factory will need repair.<br>How often a robot will need repair <b>depends on its type.</b>",
     "There are many different types of robots. Each type of robot<br>can be identified by the <b>unique symbol</b> on its chestplate.",
     "When a robot enters the scanner, you must decide whether to:<br><b>Repair</b> the robot (press SPACE) <br><b>Ignore</b> the robot (do nothing)",

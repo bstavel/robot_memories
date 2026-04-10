@@ -1,8 +1,9 @@
 /**
  * jspsych-pit-trial-memory
- * 
- * Modified version of pit-trial plugin that integrates robot memory access
- * instead of point-based feedback
+ *
+ * Points-based control version of the robot factory PIT task.
+ * Correct action on a win robot: +10. Incorrect: 0.
+ * Correct action on a lose robot: 0. Incorrect: -10.
  *
  **/
 
@@ -12,7 +13,7 @@ jsPsych.plugins["pit-trial-memory"] = (function() {
 
   plugin.info = {
     name: 'pit-trial-memory',
-    description: 'One trial of the robot factory PIT task with memory access',
+    description: 'One trial of the robot factory PIT task with point-based feedback',
     parameters: {
       robot_rune: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
@@ -28,7 +29,24 @@ jsPsych.plugins["pit-trial-memory"] = (function() {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: 'Robot Type',
         default: 'GW',
-        description: 'Robot type (GW, NGW, GAL, NGL) for memory mapping.'
+        description: 'Robot type (GW, NGW, GAL, NGL).'
+      },
+      outcome_correct: {
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'Outcome correct',
+        default: '+10',
+        description: 'Point outcome to display on correct action.'
+      },
+      outcome_incorrect: {
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'Outcome incorrect',
+        default: '0',
+        description: 'Point outcome to display on incorrect action.'
+      },
+      outcome_color: {
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'Outcome color',
+        description: 'Color of outcome text.'
       },
       correct: {
         type: jsPsych.plugins.parameterType.KEYCODE,
@@ -60,11 +78,11 @@ jsPsych.plugins["pit-trial-memory"] = (function() {
         default: 1500,
         description: 'How long to show trial before it ends.'
       },
-      memory_duration: {
+      feedback_duration: {
         type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'Memory duration',
-        default: 3000,
-        description: 'How long to show memory video.'
+        pretty_name: 'Feedback duration',
+        default: 1200,
+        description: 'How long to show point feedback.'
       },
     }
   }
@@ -158,9 +176,8 @@ jsPsych.plugins["pit-trial-memory"] = (function() {
       key: -1
     };
 
-    // Video info (set in show_memory, saved in end_trial)
-    var memory_category = null;
-    var video_file = null;
+    // Outcome (set in after_response, saved in end_trial)
+    var outcome = null;
 
     // Record any response
     var any_response = function(info) {
@@ -185,113 +202,17 @@ jsPsych.plugins["pit-trial-memory"] = (function() {
         response.accuracy = 1;
       } else {
         response.accuracy = 0;
-      };
-
-      // Show memory access feedback
-      var memory_feedback = '';
-      if (response.accuracy == 1) {
-        memory_feedback = 'Accessing Robot Memory...';
-      } else {
-        memory_feedback = 'Accessing Robot Memory...';
       }
 
-      // Present outcome
-      document.getElementById("outcome").innerHTML = memory_feedback;
-      document.getElementById("outcome").style['color'] = '#4CAF50';
+      // Determine and display point outcome
+      outcome = response.accuracy == 1 ? trial.outcome_correct : trial.outcome_incorrect;
+      document.getElementById("outcome").innerHTML = outcome;
+      document.getElementById("outcome").style['color'] = trial.outcome_color;
 
-      // After brief feedback, show memory
-      jsPsych.pluginAPI.setTimeout(function() {
-        show_memory();
-      }, 1000);
-
-    };
-
-    // Show memory video
-    var show_memory = function() {
-      
-      // Determine memory category (for label/color) based on accuracy
-      var isCorrect = response.accuracy == 1;
-      memory_category = getMemoryCategory(trial.robot_type, isCorrect);
-      video_file = selectRandomVideo(memory_category);
-      var memory_info = getMemoryInfo(memory_category);
-      
-      // Create memory display directly
-      var memory_html = '';
-      
-      // Add CSS for memory display
-      memory_html += `<style>
-      .memory-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: linear-gradient(0deg, #808080 0%, #606060 50%, #A0A0A0 50%, #D3D3D3 100%);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-      .memory-title {
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 20px;
-        text-align: center;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-      }
-      .memory-video {
-        max-width: 80vw;
-        max-height: 60vh;
-        border: 3px solid #333;
-        border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      }
-      .memory-category {
-        color: ${memory_info.color};
-        font-size: 18px;
-        margin-top: 10px;
-        font-style: italic;
-      }
-      </style>`;
-
-      // Add memory container
-      memory_html += '<div class="memory-container">';
-      memory_html += `<div class="memory-title">Accessing Memory...</div>`;
-      memory_html += '<video class="memory-video" id="memory-video">';
-      memory_html += 'Your browser does not support the video tag.';
-      memory_html += '</video>';
-      memory_html += `<div class="memory-category"></div>`;
-      memory_html += '</div>';
-
-      // Display memory
-      display_element.innerHTML = memory_html;
-
-      // Set video source
-      var videoElement = document.getElementById('memory-video');
-      var videoPath = `app/static/videos/${memory_category}/${video_file}`;
-      videoElement.src = videoPath;
-
-      // Video event handlers
-      videoElement.addEventListener('ended', function() {
-        end_trial();
-      });
-
-      videoElement.addEventListener('error', function() {
-        console.log('Video error, ending trial');
-        end_trial();
-      });
-
-      // Cut off video at memory_duration
+      // End trial after feedback duration
       jsPsych.pluginAPI.setTimeout(function() {
         end_trial();
-      }, trial.memory_duration);
-
-      // Start playing video
-      videoElement.play().catch(function(error) {
-        console.log('Video autoplay failed:', error);
-      });
+      }, trial.feedback_duration);
 
     };
 
@@ -314,11 +235,10 @@ jsPsych.plugins["pit-trial-memory"] = (function() {
         "choice": response.key,
         "rt": response.rt,
         "accuracy": response.accuracy,
+        "outcome": outcome,
         "robot_type": trial.robot_type,
         "keys": all_responses,
-        "total_keys": all_responses.length,
-        "video_category": memory_category,
-        "video_file": video_file
+        "total_keys": all_responses.length
       };
 
       // Clear the display

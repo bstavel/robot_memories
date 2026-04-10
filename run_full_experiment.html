@@ -46,7 +46,7 @@
 
   // Add version metadata.
   jsPsych.data.addProperties({
-    task_version: 'memory-v1.0-full-test',
+    task_version: 'points-v1.0-full-test',
   });
 
   // Define global variables.
@@ -66,8 +66,6 @@
   timeline = timeline.concat(READY_02);                // Ready check (block 2)
   timeline = timeline.concat(PIT.slice(120,240));      // PIT task (block 2)
   timeline = timeline.concat(FINISHED);                // End of task
-  timeline = timeline.concat(DEMO);                    // Demographics
-  timeline = timeline.concat(DEBRIEF);                 // Debriefing
 
   // Track trial count for periodic saving.
   var trial_count = 0;

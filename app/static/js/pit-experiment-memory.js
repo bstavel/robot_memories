@@ -31,7 +31,7 @@ const key_go_memory = 32;
 
 // Define timings.
 const trial_duration_memory = 1300;         // Duration of trial (response phase)
-const memory_duration = 6000;        // Duration of memory access
+const feedback_duration = 1200;             // Duration of point feedback
 
 // Define payment.
 const completion_bonus = 0.00;
@@ -104,17 +104,24 @@ for (let i=0; i<runsheets.length; i++) {
         robot_type = 'NGL'; // No-Go-Avoid-Loss
       }
 
+      // Define point outcomes.
+      const outcome_correct   = valence == 'win' ? '+10' : '0';
+      const outcome_incorrect = valence == 'win' ? '0'   : '-10';
+
       // Define trial.
       const trial = {
         type: 'pit-trial-memory',
         robot_rune: runes[i][stimulus],
         scanner_color: valence == 'win' ? scanner_color_win : scanner_color_lose,
+        outcome_color: valence == 'win' ? outcome_color_win : outcome_color_lose,
+        outcome_correct: outcome_correct,
+        outcome_incorrect: outcome_incorrect,
         robot_type: robot_type,
         correct: robot % 2 == 0 ? key_go_memory : -1,
         rune_set: rune_set,
         valid_responses: [key_go_memory],
         trial_duration: trial_duration_memory,
-        memory_duration: memory_duration,
+        feedback_duration: feedback_duration,
         data: {
           block: i + 1,
           trial: n + 1,
@@ -147,7 +154,7 @@ var READY_01 = {
   type: 'pit-instructions',
   pages: [
     "Great job! You've passed the comprehension check.",
-    "Get ready to begin <b>Block 1/2</b>. It will take ~15 minutes.<br>Press next when you're ready to start.",
+    "Get ready to begin <b>Block 1/2</b>. It will take ~7 minutes.<br>Press next when you're ready to start.",
   ],
   show_clickable_nav: true,
   button_label_previous: "Prev",
@@ -161,7 +168,7 @@ var READY_02 = {
   type: 'pit-instructions',
   pages: [
     "Take a break for a few moments and press any button when you are ready to continue.",
-    "Get ready to begin <b>Block 2/2</b>. It will take ~15 minutes.<br>Press next when you're ready to start.",
+    "Get ready to begin <b>Block 2/2</b>. It will take ~7 minutes.<br>Press next when you're ready to start.",
   ],
   show_clickable_nav: true,
   button_label_previous: "Prev",
@@ -187,7 +194,7 @@ var FINISHED = {
 var WELCOME = {
   type: 'instructions',
   pages: [
-    "<b>Welcome to the Robot Memory Access experiment!</b><br><br>We will get started with some instructions.<br>Please read each instruction carefully."
+    "<b>Welcome to the Robot Points Factory experiment!</b><br><br>We will get started with some instructions.<br>Please read each instruction carefully."
   ],
   show_clickable_nav: true,
   button_label_previous: 'Prev',

@@ -36,23 +36,22 @@ if (typeof trial_duration === 'undefined') {
 var instructions_01 = {
   type: 'pit-instructions',
   pages: [
-    "Welcome to the <b>Robot Memory Access</b> game!",
-    "In this game, you will be inspecting robots as they move down the assembly line into the <b>scanner</b>.",
+    "Welcome to the <b>Robot Factory</b> game!",
+    "This game is very similar to the last game you just played, but instead inspecting memories, you will be collecting points.",
+    "As before, you will be inspecting robots as they move down the assembly line into the <b>scanner</b>.",
     "Sometimes a robot in the factory will need repair.<br>How often a robot will need repair <b>depends on its type.</b>",
     "There are many different types of robots. Each type of robot<br>can be identified by the <b>unique symbol</b> on its chestplate.",
     "When a robot enters the scanner, you must decide whether to:<br><b>Repair</b> the robot (press SPACE) <br><b>Ignore</b> the robot (do nothing)",
-    "By making correct decisions, you can access the robot's <b>memories</b> - both good and bad.",
-    `Importantly, the quality of memories you can access depends<br>on whether the robot is <b><font color=${outcome_color_win}>SAFE</font></b> or <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.`,
-    `If the scanner is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, the robot is <b><font color=${outcome_color_win}>SAFE</font></b>.<br>Correct actions will let you access the robot's <b>best memories</b>.<br>Incorrect actions will only show you <b>boring memories</b>.`,
-    "Now let's practice with a safe robot. Try to learn if<br>you should repair (press SPACE) or ignore it (do nothing).<br><b>Remember:</b> correct actions access better memories.",
-    "<b>HINT:</b> Only press once the robot is in the scanner<br>and the scanner light comes on."
+    "By making correct decisions, you can <b>earn points</b>.",
+    `Importantly, the points you earn depend<br>on whether the robot is <b><font color=${outcome_color_win}>SAFE</font></b> or <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.`,
+    `If the scanner is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, the robot is <b><font color=${outcome_color_win}>SAFE</font></b>.<br>Correct actions earn you <b><font color=${outcome_color_win}>+10 points</font></b>.<br>Incorrect actions earn you <b>0 points</b>.`
   ],
   robot_runes: [
     '', '', '', 'O', '', '', '', '', ''
   ],
   scanner_colors: [
     '#FFFFFF00', '#FFFFFF00', '#FFFFFF00', '#FFFFF080', '#FFFFFF00', '#FFFFFF00',
-    '#FFFFFF00', scanner_color_win, scanner_color_win, scanner_color_win
+    '#FFFFFF00', scanner_color_win, scanner_color_win
   ],
   show_clickable_nav: true,
   button_label_previous: "Prev",
@@ -66,7 +65,7 @@ var instructions_02 = {
   type: 'pit-instructions',
   pages: [
     "Now let's practice for another type of safe robot.<br>Try to learn if you should repair this robot (press SPACE)<br>or ignore it (do nothing).",
-    "<b>Remember:</b> not every robot will need repair, and<br>correct actions access better memories."
+    "<b>Remember:</b> not every robot will need repair, and<br>correct actions earn you +10 points."
   ],
   show_clickable_nav: true,
   button_label_previous: "Prev",
@@ -76,8 +75,7 @@ var instructions_02 = {
 var instructions_03 = {
   type: 'pit-instructions',
   pages: [
-    `If the scanner is <b><font color=${outcome_color_lose}>${instr_color_lose}</font></b>, the robot is <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.<br>Correct actions will let you access <b>boring memories</b>.<br>Incorrect actions will show you the robot's <b>worst memories</b>.`,
-    "Now let's practice for a dangerous robot. Try to learn if<br>you should repair it (press SPACE) or ignore it (do nothing).<br><b>Remember:</b> correct actions help you avoid the worst memories.",
+    `If the scanner is <b><font color=${outcome_color_lose}>${instr_color_lose}</font></b>, the robot is <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.<br>Correct actions keep you at <b>0 points</b>.<br>Incorrect actions cost you <b><font color=${outcome_color_lose}>-10 points</font></b>.`,
   ],
   show_clickable_nav: true,
   button_label_previous: "Prev",
@@ -88,7 +86,7 @@ var instructions_04 = {
   type: 'pit-instructions',
   pages: [
     "Now let's practice for another type of dangerous robot.<br>Try to learn if you should repair this robot (press SPACE)<br>or ignore it (do nothing).",
-    "<b>Remember:</b> some dangerous robots need repair, and<br>correct actions help you avoid the worst memories."
+    "<b>Remember:</b> some dangerous robots need repair, and<br>correct actions help you avoid losing 10 points."
   ],
   show_clickable_nav: true,
   button_label_previous: "Prev",
@@ -101,8 +99,8 @@ var instructions_05 = {
     "Great job! We're almost ready to begin the game.",
     "<b>Remember:</b> Not all robots of the same type will need repair, but<br>some types of robots will need repair more often than others.",
     "Pay close attention to the robot's symbol as it will help you<br>decide whether to repair the robot (press SPACE)<br>or ignore the robot (do nothing).",
-    "Try to access the best memories and avoid the worst ones<br>by making correct repair decisions.",
-    "At the end of the task, we'll ask you some questions about<br>the memories you accessed and the decisions you made.",
+    "Try to earn as many points as possible<br>by making correct repair decisions.",
+    "At the end of the task, we'll ask you some questions about<br>the decisions you made.",
     "Next, we will ask you some questions about the task."
   ]
 }
@@ -126,11 +124,14 @@ const practice_01_trial = {
   type: 'pit-trial-memory',
   robot_rune: 'A',
   scanner_color: '#3366ff99',
+  outcome_color: outcome_color_win,
+  outcome_correct: '+10',
+  outcome_incorrect: '0',
   robot_type: 'GW',
   correct: 32,
   valid_responses: [32],
   trial_duration: 1300,
-  memory_duration: 2000,
+  feedback_duration: 1200,
   data: {block: 0, practice: 1}
 }
 
@@ -167,11 +168,14 @@ const practice_02_trial = {
   type: 'pit-trial-memory',
   robot_rune: 'B',
   scanner_color: '#3366ff99',
+  outcome_color: outcome_color_win,
+  outcome_correct: '+10',
+  outcome_incorrect: '0',
   robot_type: 'NGW',
   correct: -1,
   valid_responses: [32],
   trial_duration: 1300,
-  memory_duration: 2000,
+  feedback_duration: 1200,
   data: {block: 0, practice: 2}
 }
 
@@ -208,11 +212,14 @@ const practice_03_trial = {
   type: 'pit-trial-memory',
   robot_rune: 'C',
   scanner_color: '#f73b6a7A',
+  outcome_color: outcome_color_lose,
+  outcome_correct: '0',
+  outcome_incorrect: '-10',
   robot_type: 'GAL',
   correct: 32,
   valid_responses: [32],
   trial_duration: 1300,
-  memory_duration: 2000,
+  feedback_duration: 1200,
   data: {block: 0, practice: 3}
 }
 
@@ -249,11 +256,14 @@ const practice_04_trial = {
   type: 'pit-trial-memory',
   robot_rune: 'D',
   scanner_color: '#f73b6a7A',
+  outcome_color: outcome_color_lose,
+  outcome_correct: '0',
+  outcome_incorrect: '-10',
   robot_type: 'NGL',
   correct: -1,
   valid_responses: [32],
   trial_duration: 1300,
-  memory_duration: 2000,
+  feedback_duration: 1200,
   data: {block: 0, practice: 4}
 }
 
@@ -293,22 +303,22 @@ var quiz = {
   type: 'pit-comprehension',
   prompts: [
     "To <b>repair</b> a robot, what do you do?",
-    `When the scanner light is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, what type of memories will you access for correct actions?`,
-    `When the scanner light is <b><font color=${outcome_color_lose}>${instr_color_lose}</font></b>, what type of memories will you access for correct actions?`,
+    `When the scanner light is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, what points do you earn for a correct action?`,
+    `When the scanner light is <b><font color=${outcome_color_lose}>${instr_color_lose}</font></b>, what happens if you make a correct action?`,
     "<i>True</i> or <i>False</i>: Some robots will need repair more often than others.",
-    "<i>True</i> or <i>False</i>: Making correct decisions helps you access better memories."
+    "<i>True</i> or <i>False</i>: Making correct decisions helps you earn more points."
   ],
   options: [
     ["Press SPACE", "Do nothing", "Press ENTER"],
-    ["Best memories", "Boring memories", "Worst memories"],
-    ["Best memories", "Boring memories",  "Worst memories"],
+    ["+10 points", "0 points", "-10 points"],
+    ["Lose 10 points", "Gain 10 points", "Lose 0 points"],
     ["True", "False"],
     ["True", "False"]
   ],
   correct: [
     "Press SPACE",
-    "Best memories",
-    "Boring memories",
+    "+10 points",
+    "Lose 0 points",
     "True",
     "True"
   ]
@@ -321,17 +331,7 @@ var quiz = {
 var INSTRUCTIONS = {
   timeline: [
     instructions_01,
-    practice_01,
-    attention_check,
-    instructions_02,
-    practice_02,
-    attention_check,
     instructions_03,
-    practice_03,
-    attention_check,
-    instructions_04,
-    practice_04,
-    attention_check,
     instructions_05,
     quiz
   ]
