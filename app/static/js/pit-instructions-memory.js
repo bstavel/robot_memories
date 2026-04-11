@@ -130,7 +130,7 @@ const practice_01_trial = {
   correct: 32,
   valid_responses: [32],
   trial_duration: 1300,
-  memory_duration: 2000,
+  memory_duration: 6000,
   data: {block: 0, practice: 1}
 }
 
@@ -171,7 +171,7 @@ const practice_02_trial = {
   correct: -1,
   valid_responses: [32],
   trial_duration: 1300,
-  memory_duration: 2000,
+  memory_duration: 6000,
   data: {block: 0, practice: 2}
 }
 
@@ -212,7 +212,7 @@ const practice_03_trial = {
   correct: 32,
   valid_responses: [32],
   trial_duration: 1300,
-  memory_duration: 2000,
+  memory_duration: 6000,
   data: {block: 0, practice: 3}
 }
 
@@ -253,7 +253,7 @@ const practice_04_trial = {
   correct: -1,
   valid_responses: [32],
   trial_duration: 1300,
-  memory_duration: 2000,
+  memory_duration: 6000,
   data: {block: 0, practice: 4}
 }
 
