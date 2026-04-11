@@ -52,6 +52,31 @@
   // Define global variables.
   var low_quality = false;
 
+  // Pause/unpause on 'p' key.
+  var isPaused = false;
+  var pause_overlay = document.createElement('div');
+  pause_overlay.id = 'pause-overlay';
+  pause_overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; color:white; font-size:2em; font-family:sans-serif; justify-content:center; align-items:center;';
+  pause_overlay.innerHTML = '<div>PAUSED<br><span style="font-size:0.5em">Press P to resume</span></div>';
+  document.documentElement.appendChild(pause_overlay);
+
+  // Capture-phase listener fires before jsPsych's own keyboard listeners.
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'p' || e.key === 'P') {
+      isPaused = !isPaused;
+      if (isPaused) {
+        pause_overlay.style.display = 'flex';
+        jsPsych.pluginAPI.clearAllTimeouts();
+        jsPsych.pluginAPI.cancelAllKeyboardResponses();
+      } else {
+        pause_overlay.style.display = 'none';
+        jsPsych.finishTrial({});
+      }
+    } else if (isPaused) {
+      e.stopImmediatePropagation();
+    }
+  }, true);
+
   // Check for skip_practice URL parameter (e.g. ?skip_practice=1)
   var skip_practice = new URLSearchParams(window.location.search).get('skip_practice') === '1';
 
@@ -75,7 +100,7 @@
     var blob = new Blob([json], {type: 'application/json'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'data_trial_' + trial_count + '.json';
+    a.download = 'points_data_trial_' + trial_count + '.json';
     a.click();
     URL.revokeObjectURL(a.href);
   }
