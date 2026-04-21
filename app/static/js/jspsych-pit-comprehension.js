@@ -157,15 +157,35 @@ jsPsych.plugins['pit-comprehension'] = (function() {
 
       }
 
+      // If any errors, highlight wrong answers and prompt retry.
+      if (num_errors > 0) {
+        // Remove any previous error message.
+        var prev_msg = display_element.querySelector('#comprehension-error-msg');
+        if (prev_msg) prev_msg.remove();
+
+        // Highlight incorrect questions in red.
+        for (var k = 0; k < trial.prompts.length; k++) {
+          var q = display_element.querySelector('#jspsych-survey-multi-choice-' + k);
+          var val = q.querySelector("input[type=radio]:checked").value;
+          q.style.borderLeft = (trial.correct[k] != val) ? '3px solid #f73b6a' : '';
+        }
+
+        // Show error message below the preamble heading.
+        var msg = document.createElement('p');
+        msg.id = 'comprehension-error-msg';
+        msg.style.cssText = 'color:#f73b6a; font-weight:bold; margin:0 0 12px 0;';
+        msg.textContent = 'Some answers were incorrect. Please review and try again.';
+        var preamble = display_element.querySelector('.jspsych-survey-multi-choice-preamble');
+        preamble.parentNode.insertBefore(msg, preamble.nextSibling);
+        return;
+      }
+
       // store data
       var trial_data = {
         "responses": responses,
         "num_errors": num_errors,
         "rt": response_time
       };
-
-      // clear html
-      display_element.innerHTML += '';
 
       // next trial
       jsPsych.finishTrial(trial_data);
