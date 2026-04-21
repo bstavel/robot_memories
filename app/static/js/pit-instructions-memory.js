@@ -42,17 +42,19 @@ var instructions_01 = {
     "There are many different types of robots. Each type of robot<br>can be identified by the <b>unique symbol</b> on its chestplate.",
     "When a robot enters the scanner, you must decide whether to:<br><b>Repair</b> the robot (press SPACE) <br><b>Ignore</b> the robot (do nothing)",
     "When you decide to repair or ignore a robot, you will access the robot's <b>memories</b> - both good and bad.",
+    "The types of memories you access will always depend on (1) the type of robot and (2) whether you decide to repair or ignore it.",
+    "For example, whenever you repair a robot with the same symbol on its chestplate, you will <b>always</b> gain access to the same type of memories.",
     `Importantly, the type of memories you can access depends<br>on whether the robot is <b><font color=${outcome_color_win}>SAFE</font></b> or <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.`,
     `If the scanner is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, the robot is <b><font color=${outcome_color_win}>SAFE</font></b>.<br>Some actions will let you access the robot's <b>best memories</b>.<br>Other actions will only show you <b>boring memories</b>.`,
     "Now let's practice with a safe robot. Try to learn if<br>you should repair (press SPACE) or ignore it (do nothing).<br><b>Remember:</b> correct actions access better memories.",
     "<b>HINT:</b> Only press once the robot is in the scanner<br>and the scanner light comes on."
   ],
   robot_runes: [
-    '', '', '', 'O', '', '', '', '', ''
+    '', '', '', 'O', '', '', 'O', 'O', '', '', ''
   ],
   scanner_colors: [
-    '#FFFFFF00', '#FFFFFF00', '#FFFFFF00', '#FFFFF080', '#FFFFFF00', '#FFFFFF00',
-    '#FFFFFF00', scanner_color_win, scanner_color_win, scanner_color_win
+    '#FFFFFF00', '#FFFFFF00', '#FFFFFF00', '#FFFFF080', '#FFFFFF00', '#FFFFFF00', '#FFFFF080', '#FFFFF080',
+     scanner_color_win, scanner_color_win, scanner_color_win
   ],
   show_clickable_nav: true,
   button_label_previous: "Prev",
