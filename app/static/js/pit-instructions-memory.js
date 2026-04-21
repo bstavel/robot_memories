@@ -41,9 +41,9 @@ var instructions_01 = {
     "Sometimes a robot in the factory will need repair.<br>How often a robot will need repair <b>depends on its type.</b>",
     "There are many different types of robots. Each type of robot<br>can be identified by the <b>unique symbol</b> on its chestplate.",
     "When a robot enters the scanner, you must decide whether to:<br><b>Repair</b> the robot (press SPACE) <br><b>Ignore</b> the robot (do nothing)",
-    "By making correct decisions, you can access the robot's <b>memories</b> - both good and bad.",
-    `Importantly, the quality of memories you can access depends<br>on whether the robot is <b><font color=${outcome_color_win}>SAFE</font></b> or <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.`,
-    `If the scanner is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, the robot is <b><font color=${outcome_color_win}>SAFE</font></b>.<br>Correct actions will let you access the robot's <b>best memories</b>.<br>Incorrect actions will only show you <b>boring memories</b>.`,
+    "When you decide to repair or ignore a robot, you will access the robot's <b>memories</b> - both good and bad.",
+    `Importantly, the type of memories you can access depends<br>on whether the robot is <b><font color=${outcome_color_win}>SAFE</font></b> or <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.`,
+    `If the scanner is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, the robot is <b><font color=${outcome_color_win}>SAFE</font></b>.<br>Some actions will let you access the robot's <b>best memories</b>.<br>Other actions will only show you <b>boring memories</b>.`,
     "Now let's practice with a safe robot. Try to learn if<br>you should repair (press SPACE) or ignore it (do nothing).<br><b>Remember:</b> correct actions access better memories.",
     "<b>HINT:</b> Only press once the robot is in the scanner<br>and the scanner light comes on."
   ],
@@ -76,8 +76,8 @@ var instructions_02 = {
 var instructions_03 = {
   type: 'pit-instructions',
   pages: [
-    `If the scanner is <b><font color=${outcome_color_lose}>${instr_color_lose}</font></b>, the robot is <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.<br>Correct actions will let you access <b>boring memories</b>.<br>Incorrect actions will show you the robot's <b>worst memories</b>.`,
-    "Now let's practice for a dangerous robot. Try to learn if<br>you should repair it (press SPACE) or ignore it (do nothing).<br><b>Remember:</b> correct actions help you avoid the worst memories.",
+    `If the scanner is <b><font color=${outcome_color_lose}>${instr_color_lose}</font></b>, the robot is <b><font color=${outcome_color_lose}>DANGEROUS</font></b>.<br>Some actions will let you access the robot's <b>boring memories</b>.<br>Other actions will show you the robot's <b>worst memories</b>.`,
+    "Now let's practice for a dangerous robot. Try to learn if<br>you should repair it (press SPACE) or ignore it (do nothing).<br><b>Remember:</b> correct actions help you avoid bad memories.",
   ],
   show_clickable_nav: true,
   button_label_previous: "Prev",
@@ -101,8 +101,6 @@ var instructions_05 = {
     "Great job! We're almost ready to begin the game.",
     "<b>Remember:</b> Not all robots of the same type will need repair, but<br>some types of robots will need repair more often than others.",
     "Pay close attention to the robot's symbol as it will help you<br>decide whether to repair the robot (press SPACE)<br>or ignore the robot (do nothing).",
-    "Try to access the best memories and avoid the worst ones<br>by making correct repair decisions.",
-    "At the end of the task, we'll ask you some questions about<br>the memories you accessed and the decisions you made.",
     "Next, we will ask you some questions about the task."
   ]
 }
@@ -293,22 +291,22 @@ var quiz = {
   type: 'pit-comprehension',
   prompts: [
     "To <b>repair</b> a robot, what do you do?",
-    `When the scanner light is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, what type of memories will you access for correct actions?`,
-    `When the scanner light is <b><font color=${outcome_color_lose}>${instr_color_lose}</font></b>, what type of memories will you access for correct actions?`,
+    `When the scanner light is <b><font color=${outcome_color_win}>${instr_color_win}</font></b>, what types of memories can you access?`,
+    `When the scanner light is <b><font color=${outcome_color_lose}>${instr_color_lose}</font></b>, what types of memories can you access?`,
     "<i>True</i> or <i>False</i>: Some robots will need repair more often than others.",
     "<i>True</i> or <i>False</i>: Making correct decisions helps you access better memories."
   ],
   options: [
     ["Press SPACE", "Do nothing", "Press ENTER"],
-    ["Best memories", "Boring memories", "Worst memories"],
-    ["Best memories", "Boring memories",  "Worst memories"],
+    ["Good memories and boring memories", "Boring memories only", "Bad memories and boring memories"],
+    ["Good memories and boring memories", "Boring memories only", "Bad memories and boring memories"],
     ["True", "False"],
     ["True", "False"]
   ],
   correct: [
     "Press SPACE",
-    "Best memories",
-    "Boring memories",
+    "Good memories and boring memories",
+    "Bad memories and boring memories",
     "True",
     "True"
   ]
