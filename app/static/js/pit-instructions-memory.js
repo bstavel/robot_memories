@@ -99,8 +99,6 @@ var instructions_05 = {
     "Great job! We're almost ready to begin the game.",
     "<b>Remember:</b> Not all robots of the same type will need repair, but<br>some types of robots will need repair more often than others.",
     "Pay close attention to the robot's symbol as it will help you<br>decide whether to repair the robot (press SPACE)<br>or ignore the robot (do nothing).",
-    "Try to earn as many points as possible<br>by making correct repair decisions.",
-    "At the end of the task, we'll ask you some questions about<br>the decisions you made.",
     "Next, we will ask you some questions about the task."
   ]
 }
